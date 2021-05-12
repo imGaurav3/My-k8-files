@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: readinessprobe-deployment
+  labels:
+    app: readinessprobeapp
+
+spec:
+  template:
+    metadata:
+      name: readinessprobe-pod
+      labels:
+        app: readinessprobeapp
+
+    spec:
+      containers:
+        - name: busybox-container
+          image: busybox
+          args:
+            - /bin/sh
+            - -c
+            - sleep 20; touch hello; rm -f hello; sleep 600;
+          readinessProbe:
+            exec:
+              command:
+                - cat
+                - hello
+            periodSeconds: 3
+            initialDelaySeconds: 5
+
+  replicas: 1
+  selector:
+    matchLabels:
+      app: readinessprobeapp
